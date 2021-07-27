@@ -8,18 +8,21 @@ class CampersController < ApplicationController
     def show
         camper = Camper.find_by(id: params[:id])
         if camper
-            render json: camper
+            render json: camper.to_json
         else
-            render json: { error: "Camper not found"}
+            render json: { error: "Camper not found"}, status: 404
         end
     end
 
     def create
         camper = Camper.create(camper_params)
+        # camper = Camper.new(camper_params)
+
+        # if camper.save
         if camper.valid?
-            render json: camper
+            render json: camper, status: 201
         else
-            render json: { error: "validation errors"}
+            render json: { errors: camper.errors.full_messages}, status: 422
         end
     end
 
@@ -27,6 +30,6 @@ class CampersController < ApplicationController
     private
 
     def camper_params
-        params.require(:camper).permit(:name, :age)
+        params.permit(:name, :age)
     end
 end
